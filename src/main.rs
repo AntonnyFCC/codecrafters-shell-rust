@@ -2,20 +2,34 @@
 use std::io::{self, Write};
 
 fn main() {
+    let stdin = io::stdin();
+    let mut input = String::new();
 
     loop {
+        input.clear();
         print!("$ ");
         io::stdout().flush().unwrap();
 
         // Wait for user input
-        let stdin = io::stdin();
-        let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
+        let trimmed = input.trim();
+        let mut words = trimmed.split_whitespace();
+        let command_word = words.next().unwrap_or("");
+        let param_word = words.next().unwrap_or("");
 
-        if input.trim() == "exit 0" {
-            break;
-        }else {
-            println!("{}: command not found", input.trim());
+        match trimmed {
+            "exit 0" => break,
+            _ => {
+                match command_word {
+                    "echo" => {
+                        println!("{}", param_word);
+                    },
+                    _ => {
+                        println!("{}: command not found", input.trim());
+                    }
+                }
+            }
         }
+
     }
 }
