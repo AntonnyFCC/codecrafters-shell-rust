@@ -13,7 +13,7 @@ fn main() {
         // Wait for user input
         stdin.read_line(&mut input).unwrap();
         let trimmed = input.trim();
-        let mut words = trimmed.split_whitespace();
+        let mut words = trimmed.splitn(2, " ");
         let command_word = words.next().unwrap_or("");
         let param_word = words.next().unwrap_or("");
 
