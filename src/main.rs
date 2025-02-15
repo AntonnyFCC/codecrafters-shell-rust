@@ -1,14 +1,12 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
+use pathsearch::find_executable_in_path;
+
+const BUILTINS: [&str; 3] = ["echo", "exit", "type"];
 
 fn main() {
     let stdin = io::stdin();
     let mut input = String::new();
-    let builtin_commands: [String; 3] = [
-        String::from("echo"),
-        String::from("exit"),
-        String::from("type"),
-    ];
 
     loop {
         input.clear();
@@ -20,16 +18,31 @@ fn main() {
 
         match input.trim() {
             "exit 0" => break,
-            input if input.starts_with("echo ") => println!("{}", &input[5..]),
-            input if input.starts_with("type ") => {
-                if builtin_commands.contains(&input[5..].to_string()) {
-                    println!("{} is a shell builtin", &input[5..]);
-                } else {
-                    println!("{} not found", &input[5..]);
-                }
-            },
-            _ =>  println!("{}: command not found", input.trim())
+            input if input.starts_with("echo ") => echo_command(&input[5..]),
+            input if input.starts_with("type ") => type_command(&input[5..]),
+            input => print_not_found(&input),
         }
-
     }
+}
+
+fn print_not_found(command: &str) {
+    println!("{}: not found", command);
+}
+
+fn print_builtin(command: &str) {
+    println!("{} is shell builtin", command);
+}
+
+fn type_command(argument: &str) {
+    if BUILTINS.contains(&argument) {
+        print_builtin(argument);
+    } else if let Some(executable) = find_executable_in_path(argument) {
+        println!("{} is {}", argument, executable.display())
+    } else {
+        print_not_found(argument);
+    }
+}
+
+fn echo_command(argument: &str) {
+    println!("{}", argument);
 }
