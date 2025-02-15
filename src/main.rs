@@ -30,7 +30,7 @@ fn print_not_found(command: &str) {
 }
 
 fn print_builtin(command: &str) {
-    println!("{} is shell builtin", command);
+    println!("{} is a shell builtin", command);
 }
 
 fn type_command(argument: &str) {
