@@ -4,6 +4,11 @@ use std::io::{self, Write};
 fn main() {
     let stdin = io::stdin();
     let mut input = String::new();
+    let builtin_commands: [String; 3] = [
+        String::from("echo"),
+        String::from("exit"),
+        String::from("type"),
+    ];
 
     loop {
         input.clear();
@@ -12,23 +17,18 @@ fn main() {
 
         // Wait for user input
         stdin.read_line(&mut input).unwrap();
-        let trimmed = input.trim();
-        let mut words = trimmed.splitn(2, " ");
-        let command_word = words.next().unwrap_or("");
-        let param_word = words.next().unwrap_or("");
 
-        match trimmed {
+        match input.trim() {
             "exit 0" => break,
-            _ => {
-                match command_word {
-                    "echo" => {
-                        println!("{}", param_word);
-                    },
-                    _ => {
-                        println!("{}: command not found", input.trim());
-                    }
+            input if input.starts_with("echo ") => println!("{}", &input[5..]),
+            input if input.starts_with("type ") => {
+                if builtin_commands.contains(&input[5..].to_string()) {
+                    println!("{} is a shell builtin", &input[5..]);
+                } else {
+                    println!("{} not found", &input[5..]);
                 }
-            }
+            },
+            _ =>  println!("{}: command not found", input.trim())
         }
 
     }
