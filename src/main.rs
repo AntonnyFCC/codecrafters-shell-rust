@@ -23,12 +23,13 @@ fn main() {
             input if input.starts_with("echo ") => echo_command(&input[5..]),
             input if input.starts_with("type ") => type_command(&input[5..]),
             input => {
-                let arguments: Vec<&str> = input.split_whitespace().collect();
+                let program_and_arguments: Vec<&str> = input.split_whitespace().collect();
 
-                if let Some(executable) = find_executable_in_path(&input[..4]) {
-                    executable_commnad(executable, arguments);
+                if let Some(executable) = find_executable_in_path(program_and_arguments[0]) {
+                    executable_commnad(executable, &program_and_arguments[1..]);
                 } else {
-                    print_not_found(&input);
+                    //print_not_found(&input);
+                    custom_exe_handler(program_and_arguments.len());
                 }
             }
         }
@@ -57,9 +58,14 @@ fn echo_command(argument: &str) {
     println!("{}", argument);
 }
 
-fn executable_commnad(executable: PathBuf, arguments: Vec<&str>) {
+fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
     let output = Command::new(executable).args(arguments).output().unwrap();
     if output.status.success() {
         print!("{}", String::from_utf8_lossy(&output.stdout));
     }
 }
+
+fn custom_exe_handler(num_arguments_and_program: usize) {
+    println!("Program was passed {} args (including program name).", num_arguments_and_program);
+}
+
