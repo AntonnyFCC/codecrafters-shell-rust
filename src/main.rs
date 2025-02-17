@@ -28,7 +28,7 @@ fn main() {
                 if let Some(executable) = find_executable_in_path(program_and_arguments[0]) {
                     executable_commnad(executable, &program_and_arguments[1..]);
                 } else {
-                    custom_exe_handler(program_and_arguments.len());
+                    print_not_found(program_and_arguments[0]);
                 }
             }
         }
@@ -36,7 +36,7 @@ fn main() {
 }
 
 fn print_not_found(command: &str) {
-    println!("{}: not found", command);
+    println!("{}: command not found", command);
 }
 
 fn print_builtin(command: &str) {
@@ -64,9 +64,5 @@ fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
             print!("{}", String::from_utf8_lossy(&output.stdout));
         }
     }
-}
-
-fn custom_exe_handler(num_arguments_and_program: usize) {
-    println!("Program was passed {} args (including program name).", num_arguments_and_program);
 }
 
