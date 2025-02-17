@@ -36,7 +36,7 @@ fn main() {
 }
 
 fn print_not_found(command: &str) {
-    println!("{}: command not found", command);
+    println!("{}: not found", command);
 }
 
 fn print_builtin(command: &str) {
