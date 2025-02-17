@@ -28,7 +28,6 @@ fn main() {
                 if let Some(executable) = find_executable_in_path(program_and_arguments[0]) {
                     executable_commnad(executable, &program_and_arguments[1..]);
                 } else {
-                    //print_not_found(&input);
                     custom_exe_handler(program_and_arguments.len());
                 }
             }
@@ -59,9 +58,11 @@ fn echo_command(argument: &str) {
 }
 
 fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
-    let output = Command::new(executable).args(arguments).output().unwrap();
-    if output.status.success() {
-        print!("{}", String::from_utf8_lossy(&output.stdout));
+    if let Some(name) = executable.file_name() {
+        let output = Command::new(name).args(arguments).output().unwrap();
+        if output.status.success() {
+            print!("{}", String::from_utf8_lossy(&output.stdout));
+        }
     }
 }
 
