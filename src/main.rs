@@ -5,7 +5,7 @@ use std::process::Command;
 use std::env;
 use pathsearch::find_executable_in_path;
 
-const BUILTINS: [&str; 4] = ["echo", "exit", "type", "pwd"];
+const BUILTINS: [&str; 5] = ["echo", "exit", "type", "pwd", "cd"];
 
 fn main() {
     let stdin = io::stdin();
@@ -22,6 +22,7 @@ fn main() {
         match input.trim() {
             "exit 0" => break,
             "pwd" => pwd_command(),
+            input if input.starts_with("cd ")=> cd_command(&input[3..]),
             input if input.starts_with("echo ") => echo_command(&input[5..]),
             input if input.starts_with("type ") => type_command(&input[5..]),
             input => {
@@ -72,6 +73,15 @@ fn pwd_command() {
     match env::current_dir() {
         Ok(path) => println!("{}", path.display()),
         Err(e) => println!("Error getting the current directory: {}", e)
+    }
+}
+
+fn cd_command(argument: &str) {
+    let path = PathBuf::from(argument);
+    if path.exists() {
+        let _ = env::set_current_dir(&path);
+    } else {
+        println!("cd: {}: No such file or directory", argument);
     }
 }
 
