@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::env;
 use pathsearch::find_executable_in_path;
@@ -78,7 +78,10 @@ fn pwd_command() {
 
 fn cd_command(argument: &str) {
     let path = PathBuf::from(argument);
-    if path.exists() {
+    if argument == "~" {
+        let home_dir = env::var("HOME").expect("Error getting home var");
+        let _ = env::set_current_dir(Path::new(&home_dir));
+    } else if path.exists() {
         let _ = env::set_current_dir(&path);
     } else {
         println!("cd: {}: No such file or directory", argument);
