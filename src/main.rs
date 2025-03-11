@@ -57,6 +57,12 @@ fn type_command(argument: &str) {
 }
 
 fn echo_command(argument: &str) {
+    if argument.starts_with('\'') && argument.ends_with('\'') {
+        if let Some(new_argument) = argument.get(1..argument.len() - 1) {
+            println!("{}", new_argument);
+            return;
+        }
+    }
     println!("{}", argument);
 }
 
