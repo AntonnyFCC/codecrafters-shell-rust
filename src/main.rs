@@ -60,10 +60,10 @@ fn echo_command(argument: &str) {
     if argument.starts_with('\'') && argument.ends_with('\'') {
         if let Some(new_argument) = argument.get(1..argument.len() - 1) {
             println!("{}", new_argument);
-            return;
         }
+    } else {
+        println!("{}", argument.split_whitespace().collect::<Vec<&str>>().join(" "));
     }
-    println!("{}", argument);
 }
 
 fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
