@@ -27,7 +27,7 @@ fn main() {
             input if input.starts_with("echo ") => echo_command(&input[5..]),
             input if input.starts_with("type ") => type_command(&input[5..]),
             input => {
-                let re = Regex::new(r"'[^']*'|\S+").unwrap();
+                let re = Regex::new(r#"["'][^']*["']|\S+"#).unwrap();
                 let program_and_arguments: Vec<&str> = re.find_iter(input)
                                                             .map(|m| m.as_str())
                                                             .collect();
@@ -61,8 +61,8 @@ fn type_command(argument: &str) {
 }
 
 fn echo_command(argument: &str) {
-    let re_spaces = Regex::new(r"('[^']*')|\s+").unwrap();
-    let re_quotes = Regex::new(r"'([^']*)'").unwrap();
+    let re_spaces = Regex::new(r#"(["'][^"']*["'])|\s+"#).unwrap();
+    let re_quotes = Regex::new(r#"["']([^"']*)["']"#).unwrap();
 
     let without_spaces = re_spaces.replace_all(argument, |caps: &regex::Captures| {
         if caps.get(1).is_some() {
@@ -83,7 +83,7 @@ fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
             let clean_arguments: Vec<_> = arguments
                                     .iter()
                                     .map(|&s| {
-                                        if s.starts_with('\'') && s.ends_with('\'') {
+                                        if (s.starts_with('\'') && s.ends_with('\'')) || (s.starts_with('"') && s.ends_with('"')) {
                                             &s[1..s.len() - 1]
                                         } else {
                                             s
