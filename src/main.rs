@@ -61,8 +61,9 @@ fn type_command(argument: &str) {
 }
 
 fn echo_command(argument: &str) {
-    let re_spaces = Regex::new(r#"(["'][^"']*["'])|\s+"#).unwrap();
-    let re_quotes = Regex::new(r#"["']([^"']*)["']"#).unwrap();
+    let re_spaces = Regex::new(r#"('[^']*'|"[^"]*")|\s+"#).unwrap();
+    let re_quotes = Regex::new(r#"'([^']*)'"#).unwrap();
+    let re_dquotes = Regex::new(r#""([^"]*)""#).unwrap();
 
     let without_spaces = re_spaces.replace_all(argument, |caps: &regex::Captures| {
         if caps.get(1).is_some() {
@@ -71,9 +72,11 @@ fn echo_command(argument: &str) {
             " ".to_string()
         }
     });
-    let result = re_quotes.replace_all(&without_spaces, "$1");
-    result.to_string();
-    println!("{}", result);
+
+    let result_1 = re_quotes.replace_all(&without_spaces, "$1");
+    let result_2 = re_dquotes.replace_all(&result_1, "$1");
+    result_2.to_string();
+    println!("{}", result_2);
 }
 
 fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
