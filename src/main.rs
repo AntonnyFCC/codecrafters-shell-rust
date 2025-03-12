@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Output};
 use std::env;
 use pathsearch::find_executable_in_path;
 use regex::Regex;
@@ -75,7 +75,22 @@ fn echo_command(argument: &str) {
 
 fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
     if let Some(name) = executable.file_name() {
-        let output = Command::new(name).args(arguments).output().unwrap();
+        let output: Output;
+        if name == "cat" {
+            let clean_arguments: Vec<_> = arguments
+                                    .iter()
+                                    .map(|&s| {
+                                        if s.starts_with('\'') && s.ends_with('\'') {
+                                            &s[1..s.len() - 1]
+                                        } else {
+                                            s
+                                        }
+                                    })
+                                    .collect();
+            output = Command::new(name).args(clean_arguments).output().unwrap();
+        } else {
+            output = Command::new(name).args(arguments).output().unwrap();
+        }
         if output.status.success() {
             print!("{}", String::from_utf8_lossy(&output.stdout));
         }
