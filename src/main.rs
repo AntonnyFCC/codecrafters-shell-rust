@@ -94,7 +94,6 @@ fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
         } else {
             output = Command::new(name).args(arguments).output().unwrap();
         }
-        //let output = Command::new(name).args(arguments).output().unwrap();
         if output.status.success() {
             print!("{}", String::from_utf8_lossy(&output.stdout));
         }
