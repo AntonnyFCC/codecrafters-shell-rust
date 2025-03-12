@@ -27,7 +27,7 @@ fn main() {
             input if input.starts_with("echo ") => echo_command(&input[5..]),
             input if input.starts_with("type ") => type_command(&input[5..]),
             input => {
-                let re = Regex::new(r#"["'][^']*["']|\S+"#).unwrap();
+                let re = Regex::new(r#"'[^']*'|"[^"]*"|\S+"#).unwrap();
                 let program_and_arguments: Vec<&str> = re.find_iter(input)
                                                             .map(|m| m.as_str())
                                                             .collect();
