@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::process::{Command,Output};
 use std::env;
 use pathsearch::find_executable_in_path;
 use regex::Regex;
@@ -27,7 +27,10 @@ fn main() {
             input if input.starts_with("echo ") => echo_command(&input[5..]),
             input if input.starts_with("type ") => type_command(&input[5..]),
             input => {
-                let program_and_arguments: Vec<&str> = input.split_whitespace().collect();
+                let re = Regex::new(r"'[^']*'|\S+").unwrap();
+                let program_and_arguments: Vec<&str> = re.find_iter(input)
+                                                            .map(|m| m.as_str())
+                                                            .collect();
 
                 if let Some(executable) = find_executable_in_path(program_and_arguments[0]) {
                     executable_commnad(executable, &program_and_arguments[1..]);
@@ -91,6 +94,7 @@ fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
         } else {
             output = Command::new(name).args(arguments).output().unwrap();
         }
+        //let output = Command::new(name).args(arguments).output().unwrap();
         if output.status.success() {
             print!("{}", String::from_utf8_lossy(&output.stdout));
         }
