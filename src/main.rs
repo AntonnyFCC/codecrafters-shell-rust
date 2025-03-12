@@ -4,6 +4,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::env;
 use pathsearch::find_executable_in_path;
+use regex::Regex;
 
 const BUILTINS: [&str; 5] = ["echo", "exit", "type", "pwd", "cd"];
 
@@ -57,13 +58,19 @@ fn type_command(argument: &str) {
 }
 
 fn echo_command(argument: &str) {
-    if argument.starts_with('\'') && argument.ends_with('\'') {
-        if let Some(new_argument) = argument.get(1..argument.len() - 1) {
-            println!("{}", new_argument);
+    let re_spaces = Regex::new(r"('[^']*')|\s+").unwrap();
+    let re_quotes = Regex::new(r"'([^']*)'").unwrap();
+
+    let without_spaces = re_spaces.replace_all(argument, |caps: &regex::Captures| {
+        if caps.get(1).is_some() {
+            caps[1].to_string()
+        } else {
+            " ".to_string()
         }
-    } else {
-        println!("{}", argument.split_whitespace().collect::<Vec<&str>>().join(" "));
-    }
+    });
+    let result = re_quotes.replace_all(&without_spaces, "$1");
+    result.to_string();
+    println!("{}", result);
 }
 
 fn executable_commnad(executable: PathBuf, arguments: &[&str]) {
